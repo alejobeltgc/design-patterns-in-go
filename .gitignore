@@ -1,0 +1,61 @@
+# Binarios compilados de Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Archivos de test
+*.test
+
+# Archivos de cobertura de Go
+*.out
+*.prof
+
+# Archivos de dependencias de Go
+go.sum
+
+# Directorios de build
+/build/
+/dist/
+/bin/
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Archivos del sistema operativo
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Archivos de logs
+*.log
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Archivos de configuración local
+.env
+.env.local
+.env.*.local
+
+# Directorio de módulos de Go (si usas vendor)
+/vendor/
+
+# Archivos de debug
+debug
+__debug_bin*
+
+# Archivos de profiling
+cpu.prof
+mem.prof
+profile.prof
