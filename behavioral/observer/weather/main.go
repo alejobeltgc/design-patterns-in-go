@@ -10,16 +10,19 @@ import (
 func main() {
 	fmt.Println("=== Weather Station - Observer Pattern Demo ===")
 
+	// Una sola instancia
 	weatherData := publisher.NewWeatherData()
+
+	// Usar como interfaz cuando sea necesario
+	var weatherPublisher publisher.WeatherPublisher = weatherData
 
 	currentDisplay := listeners.NewCurrentConditionsDisplay()
 	statisticsDisplay := listeners.NewStatisticsDisplay()
 	forecastDisplay := listeners.NewForecastDisplay()
 
-	// Registrar los observers
-	weatherData.RegisterObserver(currentDisplay)
-	weatherData.RegisterObserver(statisticsDisplay)
-	weatherData.RegisterObserver(forecastDisplay)
+	weatherPublisher.RegisterObserver(currentDisplay)
+	weatherPublisher.RegisterObserver(statisticsDisplay)
+	weatherPublisher.RegisterObserver(forecastDisplay)
 
 	fmt.Println("\n1. Primera medición:")
 	fmt.Println(strings.Repeat("-", 40))
@@ -33,9 +36,9 @@ func main() {
 	fmt.Println(strings.Repeat("-", 40))
 	weatherData.SetMeasurements(25.5, 90.0, 1005.0)
 
-	fmt.Println("\n4. Removiendo el forecast display:")
+	fmt.Println("\n4. Removiendo el forecast display usando la interfaz:")
 	fmt.Println(strings.Repeat("-", 40))
-	weatherData.RemoveObserver(forecastDisplay)
+	weatherPublisher.RemoveObserver(forecastDisplay)
 	weatherData.SetMeasurements(24.2, 85.0, 1008.5)
 
 	fmt.Println("\n=== Demo completado ===")
