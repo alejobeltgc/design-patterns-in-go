@@ -31,100 +31,99 @@ El patrón Factory Method define una interfaz para crear objetos, pero permite q
 
 ### Paso 1: Definir la Interface Product
 ```go
-type IPizza interface {
-    Prepare()
-    Bake()
-    Cut()
-    Box()
+type Product interface {
+    Operation() string
+    Configure() error
 }
 
-type Pizza struct {
-    Name     string
-    Dough    string
-    Sauce    string
-    Toppings []string
+type BaseProduct struct {
+    Name string
+    Type string
+    Config map[string]interface{}
 }
 ```
 
 ### Paso 2: Crear el Creator Base
 ```go
-type PizzaStore interface {
-    OrderPizza(pizzaType string) IPizza
-    CreatePizza(pizzaType string) IPizza  // Factory Method
+type Creator interface {
+    ProcessRequest(config map[string]interface{}) (string, error)
+    CreateProduct(config map[string]interface{}) Product  // Factory Method
 }
 
 // Template Method común (evita duplicación)
-type BasePizzaStore struct{}
+type BaseCreator struct{}
 
-func (ps *BasePizzaStore) OrderPizza(creator PizzaStore, pizzaType string) IPizza {
-    pizza := creator.CreatePizza(pizzaType)  // Factory Method
+func (bc *BaseCreator) ProcessRequest(creator Creator, config map[string]interface{}) (string, error) {
+    product := creator.CreateProduct(config)  // Factory Method
     
-    if pizza != nil {
-        pizza.Prepare()  // Algoritmo común
-        pizza.Bake()
-        pizza.Cut()
-        pizza.Box()
+    if product == nil {
+        return "", errors.New("failed to create product")
     }
     
-    return pizza
+    if err := product.Configure(); err != nil {  // Algoritmo común
+        return "", err
+    }
+    
+    result := product.Operation()
+    return result, nil
 }
 ```
 
 ### Paso 3: Implementar Productos Específicos
 ```go
-type NyStyleCheesePizza struct {
-    Pizza
+type ConcreteProductAlpha struct {
+    BaseProduct
 }
 
-func NewNyStyleCheesePizza() *NyStyleCheesePizza {
-    return &NyStyleCheesePizza{
-        Pizza: Pizza{
-            Name:     "NY Style Cheese Pizza",
-            Dough:    "Thin Crust",
-            Sauce:    "Marinara",
-            Toppings: []string{"Fresh Mozzarella"},
+func NewConcreteProductAlpha(config map[string]interface{}) *ConcreteProductAlpha {
+    return &ConcreteProductAlpha{
+        BaseProduct: BaseProduct{
+            Name:   "Product Alpha",
+            Type:   "Type Alpha",
+            Config: config,
         },
     }
 }
 
-func (ny *NyStyleCheesePizza) Prepare() {
-    fmt.Printf("Preparing %s\n", ny.Name)
-    fmt.Printf("Adding %v\n", ny.Toppings)
+func (p *ConcreteProductAlpha) Operation() string {
+    return fmt.Sprintf("Alpha operation with config: %v", p.Config)
+}
+
+func (p *ConcreteProductAlpha) Configure() error {
+    if p.Config["required_field"] == nil {
+        return errors.New("required_field missing")
+    }
+    return nil
 }
 ```
 
 ### Paso 4: Crear Concrete Creators
 ```go
-type NyStylePizzaStore struct {
-    BasePizzaStore
+type ConcreteCreatorAlpha struct {
+    BaseCreator
 }
 
-func (ps *NyStylePizzaStore) OrderPizza(pizzaType string) IPizza {
-    return ps.BasePizzaStore.OrderPizza(ps, pizzaType)
+func (c *ConcreteCreatorAlpha) ProcessRequest(config map[string]interface{}) (string, error) {
+    return c.BaseCreator.ProcessRequest(c, config)
 }
 
 // Factory Method - decide qué crear
-func (ps *NyStylePizzaStore) CreatePizza(pizzaType string) IPizza {
-    switch pizzaType {
-    case "cheese":
-        return NewNyStyleCheesePizza()
-    case "pepperoni":
-        return NewNyStylePepperoniPizza()
-    default:
-        return nil
-    }
+func (c *ConcreteCreatorAlpha) CreateProduct(config map[string]interface{}) Product {
+    return NewConcreteProductAlpha(config)
 }
 ```
 
 ### Paso 5: Usar el Patrón
 ```go
 func main() {
-    nyStore := &NyStylePizzaStore{}
-    chicagoStore := &ChicagoStylePizzaStore{}
+    creatorAlpha := &ConcreteCreatorAlpha{}
+    creatorBeta := &ConcreteCreatorBeta{}
+    
+    config := map[string]interface{}{"required_field": "value"}
     
     // Mismo código, diferentes productos
-    nyPizza := nyStore.OrderPizza("cheese")      // NY Style
-    chicagoPizza := chicagoStore.OrderPizza("cheese")  // Chicago Style
+    resultAlpha, _ := creatorAlpha.ProcessRequest(config)  // Product Alpha
+    resultBeta, _ := creatorBeta.ProcessRequest(config)    // Product Beta
 }
 ```
 
@@ -275,3 +274,5 @@ Ver implementación completa en: `creational/factory/factory_method/`
 cd creational/factory/factory_method
 go run .
 ```
+
+**Nota**: El ejemplo implementado usa el contexto de tiendas de pizza con diferentes estilos regionales, pero los principios del patrón son aplicables a cualquier dominio donde las subclases necesiten decidir qué objetos crear.

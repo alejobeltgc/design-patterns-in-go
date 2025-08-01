@@ -32,75 +32,67 @@ El patrón Observer define una dependencia uno-a-muchos entre objetos, de manera
 
 ### Paso 1: Definir la Interface Observer
 ```go
-type WeatherListener interface {
-    Update(temperature float64, humidity float64, pressure float64)
+type Observer interface {
+    Update(data interface{})
 }
 ```
 
 ### Paso 2: Definir la Interface Subject
 ```go
-type WeatherPublisher interface {
-    RegisterObserver(o WeatherListener)
-    RemoveObserver(o WeatherListener)
+type Subject interface {
+    RegisterObserver(o Observer)
+    RemoveObserver(o Observer)
     NotifyObservers()
 }
 ```
 
 ### Paso 3: Implementar el Subject Concreto
 ```go
-type WeatherData struct {
-    observerList []WeatherListener
-    temperature  float64
-    humidity     float64
-    pressure     float64
+type ConcreteSubject struct {
+    observerList []Observer
+    state        interface{}
 }
 
-func (wd *WeatherData) RegisterObserver(o WeatherListener) {
-    wd.observerList = append(wd.observerList, o)
+func (cs *ConcreteSubject) RegisterObserver(o Observer) {
+    cs.observerList = append(cs.observerList, o)
 }
 
-func (wd *WeatherData) NotifyObservers() {
-    for _, observer := range wd.observerList {
-        observer.Update(wd.temperature, wd.humidity, wd.pressure)
+func (cs *ConcreteSubject) NotifyObservers() {
+    for _, observer := range cs.observerList {
+        observer.Update(cs.state)
     }
 }
 
-func (wd *WeatherData) SetMeasurements(temp, hum, press float64) {
-    wd.temperature = temp
-    wd.humidity = hum
-    wd.pressure = press
-    wd.NotifyObservers()
+func (cs *ConcreteSubject) SetState(state interface{}) {
+    cs.state = state
+    cs.NotifyObservers()
 }
 ```
 
 ### Paso 4: Implementar Observers Concretos
 ```go
-type CurrentConditionsDisplay struct {
-    temperature float64
-    humidity    float64
-    pressure    float64
+type ConcreteObserver struct {
+    id   string
+    data interface{}
 }
 
-func (ccd *CurrentConditionsDisplay) Update(temp, hum, press float64) {
-    ccd.temperature = temp
-    ccd.humidity = hum
-    ccd.pressure = press
-    ccd.Display()
+func (co *ConcreteObserver) Update(data interface{}) {
+    co.data = data
+    co.Display()
 }
 
-func (ccd *CurrentConditionsDisplay) Display() {
-    fmt.Printf("Current conditions: %.1f°C and %.1f%% humidity\n", 
-        ccd.temperature, ccd.humidity)
+func (co *ConcreteObserver) Display() {
+    fmt.Printf("Observer %s received: %v\n", co.id, co.data)
 }
 ```
 
 ### Paso 5: Usar el Patrón
 ```go
-weatherData := NewWeatherData()
-currentDisplay := NewCurrentConditionsDisplay()
+subject := NewConcreteSubject()
+observer1 := NewConcreteObserver("Observer1")
 
-weatherData.RegisterObserver(currentDisplay)
-weatherData.SetMeasurements(26.6, 65.0, 1013.1) // Notifica automáticamente
+subject.RegisterObserver(observer1)
+subject.SetState("New State") // Notifica automáticamente
 ```
 
 ## 4. Escenarios Recomendables
@@ -128,20 +120,20 @@ weatherData.SetMeasurements(26.6, 65.0, 1013.1) // Notifica automáticamente
 
 ```go
 // Particularidad Go: Notificación concurrente
-func (wd *WeatherData) NotifyObservers() {
+func (cs *ConcreteSubject) NotifyObservers() {
     var wg sync.WaitGroup
-    for _, observer := range wd.observerList {
+    for _, observer := range cs.observerList {
         wg.Add(1)
-        go func(obs WeatherListener) {
+        go func(obs Observer) {
             defer wg.Done()
-            obs.Update(wd.temperature, wd.humidity, wd.pressure)
+            obs.Update(cs.state)
         }(observer)
     }
     wg.Wait()
 }
 
 // Alternativa Go idiomática con channels
-type EventChannel chan WeatherEvent
+type EventChannel chan interface{}
 ```
 
 ## 6. Pros y Contras
@@ -163,18 +155,18 @@ type EventChannel chan WeatherEvent
 ## Alternativa Go Idiomática con Channels
 
 ```go
-type WeatherStation struct {
-    subscribers []chan WeatherData
+type EventPublisher struct {
+    subscribers []chan interface{}
 }
 
-func (ws *WeatherStation) Subscribe() <-chan WeatherData {
-    ch := make(chan WeatherData, 1)
-    ws.subscribers = append(ws.subscribers, ch)
+func (ep *EventPublisher) Subscribe() <-chan interface{} {
+    ch := make(chan interface{}, 1)
+    ep.subscribers = append(ep.subscribers, ch)
     return ch
 }
 
-func (ws *WeatherStation) Publish(data WeatherData) {
-    for _, ch := range ws.subscribers {
+func (ep *EventPublisher) Publish(data interface{}) {
+    for _, ch := range ep.subscribers {
         select {
         case ch <- data:
         default: // No bloquear si el channel está lleno
@@ -191,3 +183,5 @@ Ver implementación completa en: `behavioral/observer/weather/`
 cd behavioral/observer/weather
 go run .
 ```
+
+**Nota**: El ejemplo implementado usa el contexto de una estación meteorológica con múltiples displays, pero los principios del patrón son aplicables a cualquier dominio donde necesites notificaciones uno-a-muchos.

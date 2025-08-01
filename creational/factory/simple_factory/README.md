@@ -26,71 +26,59 @@ El patrón Simple Factory encapsula la creación de objetos en una clase dedicad
 
 ### Paso 1: Definir la Interface Product
 ```go
-type IPizza interface {
-    Prepare()
-    Bake()
-    Cut()
-    Box()
+type Product interface {
+    Operation() string
+    GetInfo() string
 }
 
-type Pizza struct {
-    Name  string
-    Dough string
-    Sauce string
+type BaseProduct struct {
+    Name string
+    Type string
 }
 ```
 
 ### Paso 2: Implementar Productos Concretos
 ```go
-type CheesePizza struct {
-    Pizza
+type ConcreteProductA struct {
+    BaseProduct
 }
 
-func NewCheesePizza() *CheesePizza {
-    return &CheesePizza{
-        Pizza: Pizza{
-            Name:  "Cheese Pizza",
-            Dough: "Thin Crust",
-            Sauce: "Marinara",
+func NewConcreteProductA() *ConcreteProductA {
+    return &ConcreteProductA{
+        BaseProduct: BaseProduct{
+            Name: "Product A",
+            Type: "Type A",
         },
     }
 }
 
-func (c *CheesePizza) Prepare() {
-    fmt.Printf("Preparing %s\n", c.Name)
+func (p *ConcreteProductA) Operation() string {
+    return "Operation from Product A"
 }
 
-func (c *CheesePizza) Bake() {
-    fmt.Println("Baking for 25 minutes at 350°")
-}
-
-func (c *CheesePizza) Cut() {
-    fmt.Println("Cutting into diagonal slices")
-}
-
-func (c *CheesePizza) Box() {
-    fmt.Println("Placing in official PizzaStore box")
+func (p *ConcreteProductA) GetInfo() string {
+    return fmt.Sprintf("%s (%s)", p.Name, p.Type)
 }
 ```
 
 ### Paso 3: Crear el Simple Factory
 ```go
-type PizzaFactory struct{}
+type SimpleFactory struct{}
 
-func NewPizzaFactory() *PizzaFactory {
-    return &PizzaFactory{}
+func NewSimpleFactory() *SimpleFactory {
+    return &SimpleFactory{}
 }
 
-func (f *PizzaFactory) CreatePizza(pizzaType string) IPizza {
-    switch pizzaType {
-    case "cheese":
-        return NewCheesePizza()
-    case "pepperoni":
-        return NewPepperoniPizza()
-    case "veggie":
-        return NewVeggiePizza()
+func (f *SimpleFactory) CreateProduct(productType string) Product {
+    switch productType {
+    case "A":
+        return NewConcreteProductA()
+    case "B":
+        return NewConcreteProductB()
+    case "C":
+        return NewConcreteProductC()
     default:
-        fmt.Printf("Unknown pizza type: %s\n", pizzaType)
+        fmt.Printf("Unknown product type: %s\n", productType)
         return nil
     }
 }
@@ -99,14 +87,13 @@ func (f *PizzaFactory) CreatePizza(pizzaType string) IPizza {
 ### Paso 4: Usar el Factory
 ```go
 func main() {
-    factory := NewPizzaFactory()
+    factory := NewSimpleFactory()
     
-    pizza := factory.CreatePizza("cheese")
-    if pizza != nil {
-        pizza.Prepare()
-        pizza.Bake()
-        pizza.Cut()
-        pizza.Box()
+    product := factory.CreateProduct("A")
+    if product != nil {
+        result := product.Operation()
+        info := product.GetInfo()
+        fmt.Printf("%s: %s\n", info, result)
     }
 }
 ```
@@ -238,3 +225,5 @@ Ver implementación completa en: `creational/factory/simple_factory/`
 cd creational/factory/simple_factory
 go run .
 ```
+
+**Nota**: El ejemplo implementado usa el contexto de una pizzería con diferentes tipos de pizza, pero los principios del patrón son aplicables a cualquier dominio donde necesites centralizar la creación de objetos.

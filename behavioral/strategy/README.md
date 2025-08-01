@@ -26,49 +26,50 @@ El patrón Strategy define una familia de algoritmos, los encapsula y los hace i
 
 ### Paso 1: Definir la Interface Strategy
 ```go
-type FlyBehavior interface {
-    Fly()
+type Strategy interface {
+    Execute() string
 }
 ```
 
 ### Paso 2: Implementar Estrategias Concretas
 ```go
-type FlyWithWings struct{}
-func (f *FlyWithWings) Fly() {
-    fmt.Println("I'm flying with wings!")
+type ConcreteStrategyA struct{}
+func (s *ConcreteStrategyA) Execute() string {
+    return "Algorithm A implementation"
 }
 
-type FlyNoWay struct{}
-func (f *FlyNoWay) Fly() {
-    fmt.Println("I can't fly")
+type ConcreteStrategyB struct{}
+func (s *ConcreteStrategyB) Execute() string {
+    return "Algorithm B implementation"
 }
 ```
 
 ### Paso 3: Crear el Context
 ```go
-type Duck struct {
-    flyBehavior FlyBehavior
+type Context struct {
+    strategy Strategy
 }
 
-func (d *Duck) PerformFly() {
-    if d.flyBehavior != nil {
-        d.flyBehavior.Fly()
+func (c *Context) ExecuteStrategy() string {
+    if c.strategy != nil {
+        return c.strategy.Execute()
     }
+    return "No strategy set"
 }
 
-func (d *Duck) SetFlyBehavior(fb FlyBehavior) {
-    d.flyBehavior = fb
+func (c *Context) SetStrategy(s Strategy) {
+    c.strategy = s
 }
 ```
 
 ### Paso 4: Usar el Patrón
 ```go
-duck := &Duck{}
-duck.SetFlyBehavior(&FlyWithWings{})
-duck.PerformFly() // "I'm flying with wings!"
+context := &Context{}
+context.SetStrategy(&ConcreteStrategyA{})
+result := context.ExecuteStrategy() // "Algorithm A implementation"
 
-duck.SetFlyBehavior(&FlyNoWay{})
-duck.PerformFly() // "I can't fly"
+context.SetStrategy(&ConcreteStrategyB{})
+result = context.ExecuteStrategy() // "Algorithm B implementation"
 ```
 
 ## 4. Escenarios Recomendables
@@ -95,15 +96,16 @@ duck.PerformFly() // "I can't fly"
 
 ```go
 // Particularidad Go: Embedding
-type MallardDuck struct {
-    Duck  // Embedding, no herencia
+type ConcreteContext struct {
+    Context  // Embedding, no herencia
 }
 
 // Particularidad Go: Validación nil
-func (d *Duck) PerformFly() {
-    if d.flyBehavior != nil {  // Importante en Go
-        d.flyBehavior.Fly()
+func (c *Context) ExecuteStrategy() string {
+    if c.strategy != nil {  // Importante en Go
+        return c.strategy.Execute()
     }
+    return "No strategy set"
 }
 ```
 
@@ -130,3 +132,5 @@ Ver implementación completa en: `behavioral/strategy/duck_simulator/`
 cd behavioral/strategy/duck_simulator
 go run .
 ```
+
+**Nota**: El ejemplo implementado usa el contexto de un simulador de patos con diferentes comportamientos, pero los principios del patrón son aplicables a cualquier dominio donde necesites algoritmos intercambiables.

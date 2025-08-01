@@ -33,73 +33,70 @@ El patrón Decorator permite agregar funcionalidades a objetos dinámicamente si
 
 ### Paso 1: Definir la Interface Component
 ```go
-type Beverage interface {
-    Cost() float64
-    GetDescription() string
+type Component interface {
+    Operation() string
+    GetInfo() string
 }
 ```
 
-### Paso 2: Implementar Componente Base
+### Paso 2: Implementar Componente Base (Opcional)
 ```go
-type Pizza struct {
-    Name  string
-    Dough string
-    Sauce string
+type BaseComponent struct {
+    Name string
 }
 ```
 
 ### Paso 3: Implementar Componentes Concretos
 ```go
-type Espresso struct {
-    Pizza
+type ConcreteComponent struct {
+    BaseComponent
 }
 
-func NewEspresso() *Espresso {
-    return &Espresso{
-        Pizza: Pizza{Name: "Espresso"},
+func NewConcreteComponent() *ConcreteComponent {
+    return &ConcreteComponent{
+        BaseComponent: BaseComponent{Name: "Base Component"},
     }
 }
 
-func (e *Espresso) Cost() float64 {
-    return 1.99
+func (c *ConcreteComponent) Operation() string {
+    return "Base operation"
 }
 
-func (e *Espresso) GetDescription() string {
-    return e.Name
+func (c *ConcreteComponent) GetInfo() string {
+    return c.Name
 }
 ```
 
 ### Paso 4: Implementar Decoradores Concretos
 ```go
-type Milk struct {
-    Beverage Beverage  // Wrappea otro Beverage
+type ConcreteDecorator struct {
+    Component Component  // Wrappea otro Component
 }
 
-func NewMilk(b Beverage) *Milk {
-    if b == nil {
-        panic("beverage cannot be nil")
+func NewConcreteDecorator(c Component) *ConcreteDecorator {
+    if c == nil {
+        panic("component cannot be nil")
     }
-    return &Milk{Beverage: b}
+    return &ConcreteDecorator{Component: c}
 }
 
-func (m *Milk) Cost() float64 {
-    return m.Beverage.Cost() + 0.10  // Costo base + extra
+func (d *ConcreteDecorator) Operation() string {
+    return d.Component.Operation() + " + Extra functionality"  // Operación base + extra
 }
 
-func (m *Milk) GetDescription() string {
-    return m.Beverage.GetDescription() + ", Milk"  // Descripción base + extra
+func (d *ConcreteDecorator) GetInfo() string {
+    return d.Component.GetInfo() + ", Decorated"  // Info base + extra
 }
 ```
 
 ### Paso 5: Usar el Patrón
 ```go
-// Crear bebida compleja combinando decoradores
-beverage := NewEspresso()                    // $1.99 - "Espresso"
-beverage = NewMilk(beverage)                // $2.09 - "Espresso, Milk"  
-beverage = NewMocha(beverage)               // $2.29 - "Espresso, Milk, Mocha"
-beverage = NewWhip(beverage)                // $2.49 - "Espresso, Milk, Mocha, Whip"
+// Crear objeto complejo combinando decoradores
+component := NewConcreteComponent()                    // "Base operation"
+component = NewConcreteDecorator(component)          // "Base operation + Extra functionality"  
+component = NewAnotherDecorator(component)           // "Base operation + Extra functionality + More features"
 
-fmt.Printf("%s: $%.2f\n", beverage.GetDescription(), beverage.Cost())
+fmt.Printf("%s: %s\n", component.GetInfo(), component.Operation())
 ```
 
 ## 4. Escenarios Recomendables
@@ -126,25 +123,25 @@ fmt.Printf("%s: $%.2f\n", beverage.GetDescription(), beverage.Cost())
 
 ```go
 // Particularidad Go: Validación en constructores
-func NewMilk(b Beverage) *Milk {
-    if b == nil {
-        panic("beverage cannot be nil")  // Validación obligatoria
+func NewConcreteDecorator(c Component) *ConcreteDecorator {
+    if c == nil {
+        panic("component cannot be nil")  // Validación obligatoria
     }
-    return &Milk{Beverage: b}
+    return &ConcreteDecorator{Component: c}
 }
 
 // Particularidad Go: Patrón de delegación + extensión
-func (m *Milk) Cost() float64 {
-    return m.Beverage.Cost() + 0.10  // Delegar + extender
+func (d *ConcreteDecorator) Operation() string {
+    return d.Component.Operation() + " + Extra"  // Delegar + extender
 }
 
 // Particularidad Go: Método común en struct base
-type Pizza struct {
+type BaseComponent struct {
     Name string
 }
 
-func (p *Pizza) DefaultBox() {
-    fmt.Println("Placing in standard box")
+func (b *BaseComponent) DefaultBehavior() {
+    fmt.Println("Default behavior")
 }
 ```
 
@@ -168,32 +165,30 @@ func (p *Pizza) DefaultBox() {
 
 ```go
 // Patrón Go idiomático para configuración
-type BeverageOption func(*Beverage)
+type ComponentOption func(*Component)
 
-func WithMilk() BeverageOption {
-    return func(b *Beverage) {
-        b.cost += 0.10
-        b.description += ", Milk"
+func WithFeatureA() ComponentOption {
+    return func(c *Component) {
+        c.features = append(c.features, "FeatureA")
     }
 }
 
-func WithMocha() BeverageOption {
-    return func(b *Beverage) {
-        b.cost += 0.20
-        b.description += ", Mocha"
+func WithFeatureB() ComponentOption {
+    return func(c *Component) {
+        c.features = append(c.features, "FeatureB")
     }
 }
 
-func NewBeverage(base string, options ...BeverageOption) *Beverage {
-    b := &Beverage{description: base, cost: 1.99}
+func NewComponent(base string, options ...ComponentOption) *Component {
+    c := &Component{name: base, features: []string{}}
     for _, option := range options {
-        option(b)
+        option(c)
     }
-    return b
+    return c
 }
 
 // Uso
-beverage := NewBeverage("Espresso", WithMilk(), WithMocha())
+component := NewComponent("BaseComponent", WithFeatureA(), WithFeatureB())
 ```
 
 ## Middleware HTTP Example
@@ -227,3 +222,5 @@ Ver implementación completa en: `structural/decorator/starbuzz/`
 cd structural/decorator/starbuzz
 go run .
 ```
+
+**Nota**: El ejemplo implementado usa el contexto de un sistema de café (Starbuzz) con bebidas y condimentos, pero los principios del patrón son aplicables a cualquier dominio donde necesites agregar funcionalidades dinámicamente.

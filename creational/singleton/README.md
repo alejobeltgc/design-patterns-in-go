@@ -27,26 +27,26 @@ El patrón Singleton garantiza que una clase tenga exactamente una instancia y p
 
 ### Paso 1: Definir el Tipo y Variables Globales
 ```go
-type ChocolateBoiler struct {
-    empty  bool
-    boiled bool
+type Singleton struct {
+    data   string
+    config map[string]interface{}
 }
 
 var (
-    instance *ChocolateBoiler  // Puntero a la única instancia
-    once     sync.Once         // Garantiza ejecución única
+    instance *Singleton  // Puntero a la única instancia
+    once     sync.Once   // Garantiza ejecución única
 )
 ```
 
 ### Paso 2: Implementar GetInstance() con sync.Once
 ```go
-func GetInstance() *ChocolateBoiler {
+func GetInstance() *Singleton {
     once.Do(func() {
         // Esta función se ejecuta SOLO una vez
-        fmt.Println("Creando una única instancia de chocolatera")
-        instance = &ChocolateBoiler{
-            empty:  true,
-            boiled: false,
+        fmt.Println("Creating single instance")
+        instance = &Singleton{
+            data:   "initial data",
+            config: make(map[string]interface{}),
         }
     })
     return instance
@@ -55,32 +55,24 @@ func GetInstance() *ChocolateBoiler {
 
 ### Paso 3: Agregar Métodos de Negocio
 ```go
-func (cb *ChocolateBoiler) Fill() {
-    if cb.empty {
-        cb.empty = false
-        cb.boiled = false
-        fmt.Println("Llenando la chocolatera con leche y chocolate")
-    } else {
-        fmt.Println("Error: La chocolatera ya está llena")
-    }
+func (s *Singleton) SetData(data string) {
+    s.data = data
 }
 
-func (cb *ChocolateBoiler) Boil() {
-    if !cb.empty && !cb.boiled {
-        cb.boiled = true
-        fmt.Println("Hirviendo el contenido de la chocolatera")
-    } else {
-        fmt.Println("Error: No se puede hervir - está vacía o ya hervida")
-    }
+func (s *Singleton) GetData() string {
+    return s.data
 }
 
-func (cb *ChocolateBoiler) Drain() {
-    if !cb.empty && cb.boiled {
-        cb.empty = true
-        fmt.Println("Drenando la chocolatera hervida")
-    } else {
-        fmt.Println("Error: No se puede drenar - está vacía o no hervida")
-    }
+func (s *Singleton) SetConfig(key string, value interface{}) {
+    s.config[key] = value
+}
+
+func (s *Singleton) GetConfig(key string) interface{} {
+    return s.config[key]
+}
+
+func (s *Singleton) ProcessRequest() string {
+    return fmt.Sprintf("Processing with data: %s", s.data)
 }
 ```
 
@@ -88,16 +80,17 @@ func (cb *ChocolateBoiler) Drain() {
 ```go
 func main() {
     // Obtener la instancia desde cualquier lugar
-    boiler1 := GetInstance()
-    boiler2 := GetInstance()
+    singleton1 := GetInstance()
+    singleton2 := GetInstance()
     
     // Ambas variables apuntan al mismo objeto
-    fmt.Printf("Same instance: %t\n", boiler1 == boiler2)  // true
+    fmt.Printf("Same instance: %t\n", singleton1 == singleton2)  // true
     
     // Usar métodos
-    boiler1.Fill()
-    boiler1.Boil()
-    boiler1.Drain()
+    singleton1.SetData("Hello World")
+    fmt.Println(singleton2.GetData()) // "Hello World"
+    result := singleton1.ProcessRequest()
+    fmt.Println(result)
 }
 ```
 
@@ -292,7 +285,7 @@ func (db *DatabaseSingleton) cleanup() {
 ```go
 func TestSingletonConcurrency(t *testing.T) {
     var wg sync.WaitGroup
-    instances := make([]*ChocolateBoiler, 1000)
+    instances := make([]*Singleton, 1000)
     
     // Lanzar 1000 goroutines simultáneas
     for i := 0; i < 1000; i++ {
@@ -323,3 +316,5 @@ Ver implementación completa en: `creational/singleton/chocolate/`
 cd creational/singleton/chocolate
 go run .
 ```
+
+**Nota**: El ejemplo implementado usa el contexto de una chocolatera industrial con control de estado, pero los principios del patrón son aplicables a cualquier dominio donde necesites garantizar una única instancia global.
