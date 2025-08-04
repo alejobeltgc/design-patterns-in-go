@@ -7,6 +7,7 @@ Este repositorio contiene implementaciones de patrones de diseño clásicos en G
 ```
 design-patterns-in-go/
 ├── behavioral/          # Patrones de comportamiento
+│   ├── command/         # Command Pattern
 │   ├── observer/        # Observer Pattern
 │   └── strategy/        # Strategy Pattern
 ├── structural/          # Patrones estructurales
@@ -23,48 +24,72 @@ design-patterns-in-go/
 
 ### Behavioral Patterns (Patrones de Comportamiento)
 
+#### [Command Pattern](behavioral/command/README.md)
+
+Encapsula una petición como un objeto, permitiendo parametrizar clientes y soportar operaciones de deshacer.
+
+- **Ejemplo**: Control remoto universal con funcionalidad Undo y comandos macro
+- **Casos de uso**: Interfaces de usuario, operaciones Undo/Redo, colas de peticiones, logging
+
 #### [Observer Pattern](behavioral/observer/README.md)
+
 Define una dependencia uno-a-muchos entre objetos para notificaciones automáticas.
+
 - **Ejemplo**: Sistema de estación meteorológica con múltiples displays
 - **Casos de uso**: Notificaciones, event-driven architecture, UI updates
 
 #### [Strategy Pattern](behavioral/strategy/README.md)
+
 Define una familia de algoritmos intercambiables encapsulados.
+
 - **Ejemplo**: Simulador de patos con diferentes comportamientos de vuelo y sonido
 - **Casos de uso**: Algoritmos de ordenamiento, métodos de pago, validadores
 
 ### Structural Patterns (Patrones Estructurales)
 
 #### [Decorator Pattern](structural/decorator/README.md)
+
 Agrega funcionalidades a objetos dinámicamente sin alterar su estructura.
+
 - **Ejemplo**: Sistema de café Starbuzz con condimentos opcionales
 - **Casos de uso**: Middleware HTTP, decoradores de conexiones DB, pipelines
 
 ### Creational Patterns (Patrones Creacionales)
 
 #### [Simple Factory](creational/factory/simple_factory/README.md)
+
 Encapsula la creación de objetos en una clase dedicada.
+
 - **Ejemplo**: Fábrica de pizzas con diferentes tipos
 - **Casos de uso**: Conexiones DB, parsers, loggers
 
 #### [Factory Method](creational/factory/factory_method/README.md)
+
 Permite que las subclases decidan qué clase instanciar.
+
 - **Ejemplo**: Tiendas de pizza de diferentes estilos (NY vs Chicago)
 - **Casos de uso**: Procesadores de pago por región, adaptadores de APIs
 
 #### [Singleton Pattern](creational/singleton/README.md)
+
 Garantiza una única instancia con acceso global.
+
 - **Ejemplo**: Chocolatera industrial con control de estado
 - **Casos de uso**: Configuración, conexiones DB, caches globales
 
 ## 🚀 Cómo Ejecutar los Ejemplos
 
 ### Prerrequisitos
+
 - Go 1.19 o superior
 
 ### Ejecutar un patrón específico
 
 ```bash
+# Command Pattern
+cd behavioral/command/remote
+go run main.go
+
 # Observer Pattern
 cd behavioral/observer/weather
 go run .
@@ -93,6 +118,7 @@ go run .
 ## 📚 Particularidades de Go
 
 ### Interfaces Implícitas
+
 ```go
 // No necesitas declarar que implementas una interfaz
 type Duck struct{}
@@ -104,6 +130,7 @@ type FlyBehavior interface {
 ```
 
 ### Composición sobre Herencia
+
 ```go
 // Go usa embedding en lugar de herencia
 type MallardDuck struct {
@@ -112,6 +139,7 @@ type MallardDuck struct {
 ```
 
 ### Concurrencia con Goroutines
+
 ```go
 // Singleton thread-safe con sync.Once
 var (
@@ -128,6 +156,7 @@ func GetInstance() *Singleton {
 ```
 
 ### Constructores Idiomáticos
+
 ```go
 // Patrón de constructor en Go
 func NewPizza(name string) *Pizza {
@@ -140,18 +169,20 @@ func NewPizza(name string) *Pizza {
 
 ## 🎯 Cuándo Usar Cada Patrón
 
-| Patrón | Cuándo Usar | Evitar Cuando |
-|--------|-------------|---------------|
-| **Observer** | Notificaciones múltiples, eventos | Pocos observers, relaciones simples |
-| **Strategy** | Múltiples algoritmos, cambio dinámico | Algoritmo único, lógica simple |
-| **Decorator** | Funcionalidades opcionales, combinaciones | Pocas variaciones, estructura fija |
-| **Simple Factory** | Creación centralizada, pocos tipos | Muchos tipos, lógica compleja |
-| **Factory Method** | Múltiples familias, extensibilidad | Tipos simples, creación directa |
-| **Singleton** | Recurso único, acceso global | Testing, múltiples instancias válidas |
+| Patrón             | Cuándo Usar                                | Evitar Cuando                         |
+| ------------------ | ------------------------------------------ | ------------------------------------- |
+| **Command**        | Undo/Redo, colas, logging, desacoplamiento | Operaciones simples, sin historial    |
+| **Observer**       | Notificaciones múltiples, eventos          | Pocos observers, relaciones simples   |
+| **Strategy**       | Múltiples algoritmos, cambio dinámico      | Algoritmo único, lógica simple        |
+| **Decorator**      | Funcionalidades opcionales, combinaciones  | Pocas variaciones, estructura fija    |
+| **Simple Factory** | Creación centralizada, pocos tipos         | Muchos tipos, lógica compleja         |
+| **Factory Method** | Múltiples familias, extensibilidad         | Tipos simples, creación directa       |
+| **Singleton**      | Recurso único, acceso global               | Testing, múltiples instancias válidas |
 
 ## 🔧 Mejores Prácticas en Go
 
 ### 1. Usa Interfaces Pequeñas
+
 ```go
 // ✅ Bueno: Interface específica
 type Writer interface {
@@ -169,6 +200,7 @@ type MegaInterface interface {
 ```
 
 ### 2. Valida Parámetros Nil
+
 ```go
 func NewDecorator(component Component) *Decorator {
     if component == nil {
@@ -179,6 +211,7 @@ func NewDecorator(component Component) *Decorator {
 ```
 
 ### 3. Usa Constructores
+
 ```go
 // ✅ Constructor explícito
 func NewUserService(db Database) *UserService {
@@ -191,6 +224,7 @@ service.db = db
 ```
 
 ### 4. Prefiere Composición
+
 ```go
 // ✅ Composición
 type EnhancedService struct {
