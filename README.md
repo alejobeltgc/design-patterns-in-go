@@ -11,6 +11,7 @@ design-patterns-in-go/
 │   ├── observer/        # Observer Pattern
 │   └── strategy/        # Strategy Pattern
 ├── structural/          # Patrones estructurales
+│   ├── adapter/         # Adapter Pattern
 │   └── decorator/       # Decorator Pattern
 ├── creational/          # Patrones creacionales
 │   ├── factory/         # Factory Patterns
@@ -46,6 +47,13 @@ Define una familia de algoritmos intercambiables encapsulados.
 - **Casos de uso**: Algoritmos de ordenamiento, métodos de pago, validadores
 
 ### Structural Patterns (Patrones Estructurales)
+
+#### [Adapter Pattern](structural/adapter/README.md)
+
+Permite que interfaces incompatibles trabajen juntas actuando como un puente entre ellas.
+
+- **Ejemplo**: Sistema de adaptación bidireccional con transformaciones inteligentes
+- **Casos de uso**: Integración de APIs, código legacy, gateways de pago, adaptadores de DB
 
 #### [Decorator Pattern](structural/decorator/README.md)
 
@@ -97,6 +105,10 @@ go run .
 # Strategy Pattern
 cd behavioral/strategy/duck_simulator
 go run .
+
+# Adapter Pattern
+cd structural/adapter/ducks
+go run main.go
 
 # Decorator Pattern
 cd structural/decorator/starbuzz
@@ -174,6 +186,7 @@ func NewPizza(name string) *Pizza {
 | **Command**        | Undo/Redo, colas, logging, desacoplamiento | Operaciones simples, sin historial    |
 | **Observer**       | Notificaciones múltiples, eventos          | Pocos observers, relaciones simples   |
 | **Strategy**       | Múltiples algoritmos, cambio dinámico      | Algoritmo único, lógica simple        |
+| **Adapter**        | Interfaces incompatibles, integración      | Interfaces ya compatibles             |
 | **Decorator**      | Funcionalidades opcionales, combinaciones  | Pocas variaciones, estructura fija    |
 | **Simple Factory** | Creación centralizada, pocos tipos         | Muchos tipos, lógica compleja         |
 | **Factory Method** | Múltiples familias, extensibilidad         | Tipos simples, creación directa       |
