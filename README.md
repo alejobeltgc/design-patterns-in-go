@@ -12,7 +12,8 @@ design-patterns-in-go/
 │   └── strategy/        # Strategy Pattern
 ├── structural/          # Patrones estructurales
 │   ├── adapter/         # Adapter Pattern
-│   └── decorator/       # Decorator Pattern
+│   ├── decorator/       # Decorator Pattern
+│   └── facade/          # Facade Pattern
 ├── creational/          # Patrones creacionales
 │   ├── factory/         # Factory Patterns
 │   │   ├── simple_factory/
@@ -61,6 +62,13 @@ Agrega funcionalidades a objetos dinámicamente sin alterar su estructura.
 
 - **Ejemplo**: Sistema de café Starbuzz con condimentos opcionales
 - **Casos de uso**: Middleware HTTP, decoradores de conexiones DB, pipelines
+
+#### [Facade Pattern](structural/facade/README.md)
+
+Proporciona una interfaz unificada y simplificada para un conjunto de interfaces en un subsistema.
+
+- **Ejemplo**: Sistema de coordinación de múltiples subsistemas con operaciones simplificadas
+- **Casos de uso**: APIs de alto nivel, interfaces de usuario complejas, wrappers de librerías
 
 ### Creational Patterns (Patrones Creacionales)
 
@@ -112,6 +120,10 @@ go run main.go
 
 # Decorator Pattern
 cd structural/decorator/starbuzz
+go run .
+
+# Facade Pattern
+cd structural/facade/home_theater
 go run .
 
 # Simple Factory
@@ -188,6 +200,7 @@ func NewPizza(name string) *Pizza {
 | **Strategy**       | Múltiples algoritmos, cambio dinámico      | Algoritmo único, lógica simple        |
 | **Adapter**        | Interfaces incompatibles, integración      | Interfaces ya compatibles             |
 | **Decorator**      | Funcionalidades opcionales, combinaciones  | Pocas variaciones, estructura fija    |
+| **Facade**         | Sistemas complejos, múltiples subsistemas  | Sistemas simples, pocas dependencias  |
 | **Simple Factory** | Creación centralizada, pocos tipos         | Muchos tipos, lógica compleja         |
 | **Factory Method** | Múltiples familias, extensibilidad         | Tipos simples, creación directa       |
 | **Singleton**      | Recurso único, acceso global               | Testing, múltiples instancias válidas |
