@@ -9,7 +9,8 @@ design-patterns-in-go/
 ├── behavioral/          # Patrones de comportamiento
 │   ├── command/         # Command Pattern
 │   ├── observer/        # Observer Pattern
-│   └── strategy/        # Strategy Pattern
+│   ├── strategy/        # Strategy Pattern
+│   └── template/        # Template Method Pattern
 ├── structural/          # Patrones estructurales
 │   ├── adapter/         # Adapter Pattern
 │   ├── decorator/       # Decorator Pattern
@@ -46,6 +47,13 @@ Define una familia de algoritmos intercambiables encapsulados.
 
 - **Ejemplo**: Simulador de patos con diferentes comportamientos de vuelo y sonido
 - **Casos de uso**: Algoritmos de ordenamiento, métodos de pago, validadores
+
+#### [Template Method Pattern](behavioral/template/README.md)
+
+Define el esqueleto de un algoritmo en una clase base, permitiendo que las subclases redefinan ciertos pasos.
+
+- **Ejemplo**: Algoritmos estructurados con pasos variables y operaciones concretas
+- **Casos de uso**: Workflows de negocio, algoritmos de procesamiento, frameworks, pipelines
 
 ### Structural Patterns (Patrones Estructurales)
 
@@ -112,6 +120,10 @@ go run .
 
 # Strategy Pattern
 cd behavioral/strategy/duck_simulator
+go run .
+
+# Template Method Pattern
+cd behavioral/template/barista
 go run .
 
 # Adapter Pattern
@@ -198,6 +210,7 @@ func NewPizza(name string) *Pizza {
 | **Command**        | Undo/Redo, colas, logging, desacoplamiento | Operaciones simples, sin historial    |
 | **Observer**       | Notificaciones múltiples, eventos          | Pocos observers, relaciones simples   |
 | **Strategy**       | Múltiples algoritmos, cambio dinámico      | Algoritmo único, lógica simple        |
+| **Template Method** | Algoritmos similares, pasos variables     | Algoritmos completamente diferentes   |
 | **Adapter**        | Interfaces incompatibles, integración      | Interfaces ya compatibles             |
 | **Decorator**      | Funcionalidades opcionales, combinaciones  | Pocas variaciones, estructura fija    |
 | **Facade**         | Sistemas complejos, múltiples subsistemas  | Sistemas simples, pocas dependencias  |
