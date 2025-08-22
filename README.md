@@ -10,7 +10,8 @@ design-patterns-in-go/
 │   ├── command/         # Command Pattern
 │   ├── observer/        # Observer Pattern
 │   ├── strategy/        # Strategy Pattern
-│   └── template/        # Template Method Pattern
+│   ├── template/        # Template Method Pattern
+│   └── iterator/        # Iterator Pattern
 ├── structural/          # Patrones estructurales
 │   ├── adapter/         # Adapter Pattern
 │   ├── decorator/       # Decorator Pattern
@@ -54,6 +55,13 @@ Define el esqueleto de un algoritmo en una clase base, permitiendo que las subcl
 
 - **Ejemplo**: Algoritmos estructurados con pasos variables y operaciones concretas
 - **Casos de uso**: Workflows de negocio, algoritmos de procesamiento, frameworks, pipelines
+
+#### [Iterator Pattern](behavioral/iterator/README.md)
+
+Proporciona una forma de acceder secuencialmente a los elementos de una colección sin exponer su representación interna.
+
+- **Ejemplo**: Menús de restaurantes con iteradores para recorrer elementos
+- **Casos de uso**: Recorrer listas, mapas o árboles; paginación; flujos de datos
 
 ### Structural Patterns (Patrones Estructurales)
 
@@ -124,6 +132,10 @@ go run .
 
 # Template Method Pattern
 cd behavioral/template/barista
+go run .
+
+# Iterator Pattern
+cd behavioral/iterator/restaurant
 go run .
 
 # Adapter Pattern
@@ -211,6 +223,7 @@ func NewPizza(name string) *Pizza {
 | **Observer**       | Notificaciones múltiples, eventos          | Pocos observers, relaciones simples   |
 | **Strategy**       | Múltiples algoritmos, cambio dinámico      | Algoritmo único, lógica simple        |
 | **Template Method** | Algoritmos similares, pasos variables     | Algoritmos completamente diferentes   |
+| **Iterator**       | Acceso secuencial, paginación              | Acceso aleatorio, estructuras simples |
 | **Adapter**        | Interfaces incompatibles, integración      | Interfaces ya compatibles             |
 | **Decorator**      | Funcionalidades opcionales, combinaciones  | Pocas variaciones, estructura fija    |
 | **Facade**         | Sistemas complejos, múltiples subsistemas  | Sistemas simples, pocas dependencias  |
